@@ -1,38 +1,57 @@
 <?php
-    class ConnectModel{
-        public $servername = "localhost";
-        public $username = "root";
-        public $password = "";
-        public $databasename = 'data19304';
-        public $conn;
-        
-        public function ketnoi(){
-            try{
-                $this->conn = new PDO("mysql:host=".$this->servername.";dbname=".$this->databasename.";charset=utf8",$this->username,$this->password);
-                $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-                //  echo 'kết nối thành công';
-                return $this->conn;
-            } catch(PDOException $e) {
-                echo "Connection failed: " . $e->getMessage();
-            }
-        }
+class ConnectModel {
+    private $servername;
+    private $username;
+    private $password;
+    private $databasename;
+    private $conn;
 
-        public function selectall($sql){
-            $this->ketnoi();
-            $stmt = $this->conn->prepare($sql); 
-            $stmt->execute();
-            $kq = $stmt->fetchAll(PDO::FETCH_ASSOC); // PDO::FETCH_ASSOC : chuyển dl mãng lk
-            $this->conn = null; // đóng kết nối database
-            return $kq; // biến này chứa mãng các dòng dữ liệu trả về.
-        }
-        public function selectone($sql, $id){
-            $this->ketnoi();
-            $stmt = $this->conn->prepare($sql);
-            $stmt->bindParam(":id",$id);
-            $stmt->execute();
-            $kq = $stmt->fetchAll(PDO::FETCH_ASSOC); // PDO::FETCH_ASSOC : chuyển dl mãng lk
-            $this->conn = null; // đóng kết nối database
-            return $kq; // biến này chứa mãng các dòng dữ liệu trả về.
+    public function __construct() {
+        $this->servername = getenv('DB_SERVERNAME') ?: 'localhost';
+        $this->username = getenv('DB_USERNAME') ?: 'root';
+        $this->password = getenv('DB_PASSWORD') ?: 'root';
+        $this->databasename = getenv('DB_NAME') ?: 'shopping-system';
+    }
+
+    public function connect() {
+        try {
+            $this->conn = new PDO("mysql:host={$this->servername};dbname={$this->databasename};charset=utf8", $this->username, $this->password);
+            $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            return $this->conn;
+        } catch (PDOException $e) {
+            error_log("Connection failed: " . $e->getMessage());
+            return null;
         }
     }
+
+    public function selectAll($sql) {
+        $this->conn = $this->connect();
+        if ($this->conn) {
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute();
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $this->conn = null;
+            return $result;
+        } else {
+            return [];
+        }
+    }
+
+    public function selectOne($sql, $id) {
+        $this->conn = $this->connect();
+        if ($this->conn) {
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bindParam(":id", $id);
+            $stmt->execute();
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $this->conn = null;
+            return $result;
+        } else {
+            return [];
+        }
+    }
+}
 ?>
+
+
+
