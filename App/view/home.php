@@ -15,7 +15,6 @@
         }
         echo $ch;
     ?>
-        
     </div>
 </div>
 </main>
