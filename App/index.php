@@ -20,7 +20,6 @@ switch($page){
         include 'controllers/contactcontrollers.php';
         $contactcontrollers=new ContactControllers();
         break;
-
     case 'login':
 }
 include 'view/footer.php';
