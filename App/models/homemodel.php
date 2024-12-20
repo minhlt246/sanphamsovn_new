@@ -1,46 +1,40 @@
 <?php
-class HomeModel{
-    public $dssp;
-    public $motsp;
-    public function dssp(){ // phương thức
+class HomeModel {
+    public $listproducts;
+    public $description;
+
+    public function listproducts() { // phương thức
         include_once 'models/connectmodel.php';
-        $sp = new ConnectModel();
-        $sql ="select *from sanpham";
-        $this -> dssp = $sp->selectall($sql);
+        $products = new ConnectModel();
+        $sql = "SELECT * FROM Products";
+        $this->listproducts = $products->selectall($sql);
     }
-    public function onesp($id){ // phương thức
+
+    public function description($product_id) { // phương thức
         include_once 'models/connectmodel.php';
-        $sp = new ConnectModel();
-        $sql ="select * from sanpham where id=:id";
-        $this -> motsp = $sp->selectone($sql, $id);
+        $products = new ConnectModel();
+        $sql = "SELECT * FROM Products WHERE product_id = :id";
+        $this->description = $products->selectone($sql, ['id' => $product_id]);
     }
-    public function dssplienquan($id, $iddm){
-        $sql = "select * from sanpham where iddm = :iddm and id <> :id";
+
+    public function similarproducts($product_id, $category_id) {
+        $sql = "SELECT * FROM Products WHERE category_id = :category_id AND product_id <> :product_id";
         // kết nối database
         include_once 'models/connectmodel.php';
-        $sp = new ConnectModel();
-        $sp->ketnoi();
+        $products = new ConnectModel();
+        $products->connect();
         // chuẩn hóa câu lệnh sql
-        $stmt = $sp->conn->prepare($sql); 
-        $stmt->bindParam(":iddm", $iddm);
-        $stmt->bindParam(":id", $id);
+        $stmt = $products->conn->prepare($sql);
+        $stmt->bindParam(":category_id", $category_id);
+        $stmt->bindParam(":product_id", $product_id);
         // gọi thực hiện câu lệnh
         $stmt->execute();
         // chuyển dữ liệu thành mảng liên kết (nếu cần)
-        $kq = $stmt->fetchAll(PDO::FETCH_ASSOC); // PDO::FETCH_ASSOC : chuyển dl mãng lk
+        $kq = $stmt->fetchAll(PDO::FETCH_ASSOC); // PDO::FETCH_ASSOC : chuyển dữ liệu thành mảng liên kết
         // đóng kết nối
-        $sp->conn = null; // đóng kết nối database
+        $products->conn = null; // đóng kết nối database
         // trả về kết quả (nếu cần)
-        return $kq; // biến này chứa mãng các dòng dữ liệu trả về.
+        return $kq; // biến này chứa mảng các dòng dữ liệu trả về.
     }
-    
-    // kết nối database
-    // chuẩn hóa câu lệnh
-    // gọi thực hiện câu lệnh
-    // chuyển dữ liệu thành mảng liên kết (nếu cần)
-    // đóng kết nối
-    // trả về kết quả (nếu cần)
-
 }
-
 ?>

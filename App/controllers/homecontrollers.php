@@ -2,17 +2,17 @@
 
 class HomeControllers
 { // dang ở index
-    public function __construct($product_id, $iddm)
+    public function __construct($product_id, $category_id)
     {
         include_once 'models/homemodel.php';
-        $sp = new HomeModel();
-        if ($id == '') {
-            $sp->dssp(); //$sp->mangsp;
+        $products = new HomeModel();
+        if ($product_id == '') {
+            $products->listproducts(); //$sp->mangsp;
             include_once 'view/home.php';
         } else {
-            $sp->onesp($product_id); //$sp->motsp
+            $products->onesp($product_id); //$sp->motsp
             // danh sach san pham lien quan
-            $mangsplienquan = $sp->dssplienquan($product_id, $iddm);
+            $mangsplienquan = $products->dssplienquan($product_id, $category_id);
             include_once 'view/productdetail.php';
         }
 
