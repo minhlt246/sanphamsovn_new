@@ -31,3 +31,5 @@
             break;
     }
 ?>
+git --version
+
